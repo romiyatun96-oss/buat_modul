@@ -1,0 +1,154 @@
+import streamlit as st
+from docx import Document
+from io import BytesIO
+
+# Konfigurasi Halaman
+st.set_page_config(page_title="AI Generator Modul Ajar", layout="wide")
+
+# Pengepala Utama
+st.title("🤖 AI Generator Modul Ajar")
+st.markdown("Mudah, Cepat, dan Sesuai dengan Kurikulum Merdeka & Panduan Kemendikbudristek.")
+st.divider()
+
+# --- BAHAGIAN 1: INFORMASI UMUM ---
+st.header("1. Informasi Umum")
+st.markdown("Lengkapi data berikut untuk membuat modul ajar Anda.")
+col1, col2 = st.columns(2)
+with col1:
+    mata_pelajaran = st.selectbox("Mata Pelajaran *", ["Bahasa Indonesia", "Matematika", "IPA", "IPS", "Bahasa Inggris"])
+    jenjang = st.selectbox("Jenjang Pendidikan *", ["SMP/MTs/Program Paket B", "SD/MI", "SMA/SMK"])
+    topik = st.text_input("Topik / Materi Pembelajaran *", "Teks Deskripsi")
+    alokasi_waktu = st.selectbox("Alokasi Waktu *", ["1", "2", "3", "4"])
+with col2:
+    fase = st.selectbox("Fase *", ["Fase A-F dan Fase F Tingkat Lanjut", "Fase D", "Fase E"])
+    kelas = st.selectbox("Kelas / Tingkat *", ["VII (Tujuh)", "VIII (Delapan)", "IX (Sembilan)"])
+    durasi = st.selectbox("Durasi per Pertemuan *", ["2 x 40 menit (80 menit)", "3 x 40 menit (120 menit)"])
+
+# --- BAHAGIAN 2: KEGIATAN PEMBELAJARAN ---
+st.header("2. Kegiatan Pembelajaran")
+model_pembelajaran = st.radio("Model Pembelajaran *", 
+    ["PBL (Problem Based Learning)", "PjBL (Project Based Learning)", "Discovery Learning", "Problem Solving", "Kooperatif", "Tatap Muka", "Blended Learning"], 
+    horizontal=True)
+
+st.subheader("Kegiatan Per Pertemuan")
+with st.expander("Pertemuan 1", expanded=True):
+    pendahuluan = st.text_area("Pendahuluan (15 menit)", "1. Apersepsi dan motivasi\n2. Menyampaikan tujuan pembelajaran\n3. Mengaitkan dengan pengalaman awal murid")
+    inti = st.text_area("Inti (50 menit)", "1. Orientasi masalah (menyimak teks deskripsi)\n2. Mengorganisasi peserta didik\n3. Membimbing penyelidikan\n4. Mengembangkan dan menyajikan hasil karya\n5. Menganalisis dan mengevaluasi proses pemecahan masalah")
+    penutup = st.text_area("Penutup (15 menit)", "1. Refleksi pembelajaran\n2. Umpan balik dan tindak lanjut\n3. Penugasan individu/kelompok")
+
+# --- BAHAGIAN 3: ASESMEN / PENILAIAN ---
+st.header("3. Asesmen / Penilaian")
+col_as1, col_as2, col_as3 = st.columns(3)
+asesmen_pilihan = []
+with col_as1:
+    if st.checkbox("Tes Tertulis (Pilihan Ganda / Uraian)", value=True): asesmen_pilihan.append("Tes Tertulis")
+    if st.checkbox("Penilaian Portofolio (Kumpulan Karya)", value=True): asesmen_pilihan.append("Penilaian Portofolio")
+with col_as2:
+    if st.checkbox("Tes Lisan (Presentasi / Wawancara)", value=True): asesmen_pilihan.append("Tes Lisan")
+    if st.checkbox("Penilaian Sikap (Observasi / Jurnal)", value=True): asesmen_pilihan.append("Penilaian Sikap")
+with col_as3:
+    if st.checkbox("Penilaian Proyek (Produk & Proses)", value=True): asesmen_pilihan.append("Penilaian Proyek")
+
+# --- BAHAGIAN 4: MEDIA & SUMBER BELAJAR ---
+st.header("4. Media & Sumber Belajar")
+media_pilihan = []
+st.markdown("**Media**")
+if st.checkbox("Buku Teks Pelajaran", value=True): media_pilihan.append("Buku Teks Pelajaran")
+if st.checkbox("Video Pembelajaran", value=True): media_pilihan.append("Video Pembelajaran")
+if st.checkbox("Lembar Kerja Peserta Didik (LKPD)", value=True): media_pilihan.append("Lembar Kerja Peserta Didik (LKPD)")
+if st.checkbox("Internet / Situs Edukasi", value=True): media_pilihan.append("Internet / Situs Edukasi")
+if st.checkbox("Lingkungan Sekitar", value=True): media_pilihan.append("Lingkungan Sekitar")
+if st.checkbox("Narasumber", value=True): media_pilihan.append("Narasumber")
+
+# --- BAHAGIAN 5: PENGAYAAN & REMEDIAL ---
+st.header("5. Pengayaan & Remedial")
+col_pr1, col_pr2 = st.columns(2)
+pengayaan = []
+remedial = []
+with col_pr1:
+    st.subheader("Pengayaan")
+    if st.checkbox("Tugas proyek lanjutan", value=True): pengayaan.append("Tugas proyek lanjutan")
+    if st.checkbox("Bacaan tambahan", value=True): pengayaan.append("Bacaan tambahan")
+    if st.checkbox("Eksplorasi mandiri", value=True): pengayaan.append("Eksplorasi mandiri")
+    if st.checkbox("Kegiatan kolaboratif", value=True): pengayaan.append("Kegiatan kolaboratif")
+with col_pr2:
+    st.subheader("Remedial")
+    if st.checkbox("Pembelajaran ulang", value=True): remedial.append("Pembelajaran ulang")
+    if st.checkbox("Bimbingan individual", value=True): remedial.append("Bimbingan individual")
+    if st.checkbox("Tugas tambahan", value=True): remedial.append("Tugas tambahan")
+    if st.checkbox("Penggunaan media alternatif", value=True): remedial.append("Penggunaan media alternatif")
+
+# --- BAHAGIAN 6: PENGUATAN PROFIL PELAJAR PANCASILA ---
+st.header("6. Penguatan Profil Pelajar Pancasila")
+profil_pilihan = []
+col_pp1, col_pp2 = st.columns(2)
+with col_pp1:
+    if st.checkbox("Beriman, Bertakwa kepada Tuhan YME, dan Berakhlak Mulia", value=True): profil_pilihan.append("Beriman, Bertakwa kepada Tuhan YME, dan Berakhlak Mulia")
+    if st.checkbox("Mandiri", value=True): profil_pilihan.append("Mandiri")
+    if st.checkbox("Bernalar Kritis", value=True): profil_pilihan.append("Bernalar Kritis")
+with col_pp2:
+    if st.checkbox("Berkebinekaan Global", value=True): profil_pilihan.append("Berkebinekaan Global")
+    if st.checkbox("Gotong Royong", value=True): profil_pilihan.append("Gotong Royong")
+    if st.checkbox("Kreatif", value=True): profil_pilihan.append("Kreatif")
+
+
+# --- FUNGSI GENERATOR WORD ---
+def generate_docx():
+    doc = Document()
+    doc.add_heading('MODUL AJAR KURIKULUM MERDEKA', 0)
+    
+    doc.add_heading('1. Informasi Umum', level=1)
+    doc.add_paragraph(f"Mata Pelajaran: {mata_pelajaran}")
+    doc.add_paragraph(f"Fase / Kelas: {fase} / {kelas}")
+    doc.add_paragraph(f"Jenjang Pendidikan: {jenjang}")
+    doc.add_paragraph(f"Topik / Materi: {topik}")
+    doc.add_paragraph(f"Alokasi Waktu: {alokasi_waktu} Pertemuan ({durasi})")
+    
+    doc.add_heading('2. Profil Pelajar Pancasila', level=1)
+    for p in profil_pilihan:
+        doc.add_paragraph(p, style='List Bullet')
+        
+    doc.add_heading('3. Media & Sumber Belajar', level=1)
+    for m in media_pilihan:
+        doc.add_paragraph(m, style='List Bullet')
+        
+    doc.add_heading('4. Kegiatan Pembelajaran', level=1)
+    doc.add_paragraph(f"Model Pembelajaran: {model_pembelajaran}")
+    doc.add_heading('Pertemuan 1', level=2)
+    doc.add_paragraph("Pendahuluan:")
+    doc.add_paragraph(pendahuluan)
+    doc.add_paragraph("Inti:")
+    doc.add_paragraph(inti)
+    doc.add_paragraph("Penutup:")
+    doc.add_paragraph(penutup)
+    
+    doc.add_heading('5. Asesmen / Penilaian', level=1)
+    for a in asesmen_pilihan:
+        doc.add_paragraph(a, style='List Bullet')
+        
+    doc.add_heading('6. Pengayaan & Remedial', level=1)
+    doc.add_heading('Pengayaan', level=2)
+    for p in pengayaan:
+        doc.add_paragraph(p, style='List Bullet')
+    doc.add_heading('Remedial', level=2)
+    for r in remedial:
+        doc.add_paragraph(r, style='List Bullet')
+
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer
+
+# --- BUTANG MUAT TURUN ---
+st.divider()
+st.markdown("Modul ajar akan disusun berdasarkan semua pilihan yang Anda tentukan, termasuk instrumen asesmen yang lengkap dan terukur.")
+
+if st.button("Unduh Modul Ajar (Word)", type="primary"):
+    docx_file = generate_docx()
+    st.download_button(
+        label="Klik di sini untuk memuat turun fail .docx",
+        data=docx_file,
+        file_name=f"Modul_Ajar_{mata_pelajaran}_{kelas}.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+    st.success("Modul Ajar berjaya dijana! Sila klik butang muat turun di atas.")
